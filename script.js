@@ -79,9 +79,28 @@ function handlePopover(element) {
     // Cria o novo popover
     const popover = document.createElement('div');
     popover.classList.add('popover');
-    popover.textContent = 'Conteúdo do Popover';
 
-    // Anexa o popover ao contêiner de mensagens
+    // Cria o botão de fechamento
+    const closeButton = document.createElement('span');
+    closeButton.classList.add('popover-close-button');
+    closeButton.innerHTML = '&times;'; // Símbolo '×'
+
+    // Adiciona o event listener ao botão de fechamento
+    closeButton.addEventListener('click', function(event) {
+        event.stopPropagation();
+        popover.remove();
+    });
+
+    // Cria o conteúdo do popover
+    const popoverContent = document.createElement('div');
+    popoverContent.classList.add('popover-content');
+    popoverContent.textContent = 'Conteúdo do Popover';
+
+    // Adiciona o botão de fechamento e o conteúdo ao popover
+    popover.appendChild(closeButton);
+    popover.appendChild(popoverContent);
+
+    // Anexa o popover ao messagesContainer
     messagesContainer.appendChild(popover);
 
     // Calcula a posição do elemento clicado em relação ao contêiner
@@ -96,13 +115,12 @@ function handlePopover(element) {
 
     // Fecha o popover ao clicar fora dele
     document.addEventListener('click', function onDocClick(e) {
-        if (!popover.contains(e.target)) {
+        if (!popover.contains(e.target) && e.target !== element) {
             popover.remove();
             document.removeEventListener('click', onDocClick);
         }
     });
 }
-
 // Função para rolar o chat até a última mensagem
 function scrollToBottom() {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;

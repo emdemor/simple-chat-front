@@ -76,9 +76,11 @@ body {
     background-color: #fff;
     border: 1px solid #ccc;
     padding: 10px;
-    max-width: 200px;
+    width: 400px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Opcional: Estilo da seta do popover */
@@ -100,4 +102,21 @@ body {
     border-width: 0 9px 9px;
     border-style: solid;
     border-color: transparent transparent #fff transparent;
+}
+
+.popover-close-button {
+    align-self: flex-end;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
+    color: #aaa;
+}
+
+.popover-close-button:hover {
+    color: #000;
+}
+
+.popover-content {
+    margin-top: 5px;
 }
