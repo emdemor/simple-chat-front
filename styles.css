@@ -66,6 +66,10 @@ body {
     background-color: #45a049;
 }
 
+#messages {
+    position: relative;
+}
+
 .popover {
     position: absolute;
     z-index: 1000;
