@@ -1,21 +1,17 @@
 // Certifique-se de que a biblioteca 'faker' está incluída em seu arquivo HTML
-// <script src="https://cdn.jsdelivr.net/npm/@faker-js/faker/dist/faker.min.js"></script>
 
 const messagesContainer = document.getElementById('messages');
 const input = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 
-// Event Listener para o botão de enviar
 sendButton.addEventListener('click', sendMessage);
 
-// Event Listener para a tecla 'Enter' no campo de entrada
 input.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     sendMessage();
   }
 });
 
-// Função principal para enviar a mensagem
 function sendMessage() {
   const messageText = input.value.trim();
   if (!messageText) return;
@@ -28,7 +24,6 @@ function sendMessage() {
   scrollToBottom();
 }
 
-// Função para adicionar a mensagem do usuário ao chat
 function addUserMessage(text) {
   const userMessage = document.createElement('div');
   userMessage.classList.add('message', 'user');
@@ -36,7 +31,6 @@ function addUserMessage(text) {
   messagesContainer.appendChild(userMessage);
 }
 
-// Função para adicionar a mensagem do bot ao chat
 function addBotMessage() {
   const botMessage = document.createElement('div');
   botMessage.classList.add('message', 'bot');
@@ -51,7 +45,6 @@ function addBotMessage() {
   messagesContainer.appendChild(botMessage);
 }
 
-// Função para anexar event listeners aos elementos de texto
 function attachEventListeners(element) {
   const textElements = element.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li');
 
@@ -72,36 +65,64 @@ function attachEventListeners(element) {
 }
 
 function handlePopover(element) {
-    // Remove qualquer popover existente
+    removeExistingPopover();
+
+    const popover = createPopover();
+
+    const closeButton = createCloseButton(popover);
+
+    const popoverContent = createPopoverContent();
+
+    const form = createFeedbackForm();
+
+    popoverContent.appendChild(form);
+
+    popover.appendChild(closeButton);
+    popover.appendChild(popoverContent);
+
+    messagesContainer.appendChild(popover);
+
+    positionPopover(popover, element);
+
+    attachOutsideClickListener(popover, element);
+}
+
+function removeExistingPopover() {
     const existingPopover = messagesContainer.querySelector('.popover');
     if (existingPopover) {
         existingPopover.remove();
     }
+}
 
-    // Cria o novo popover
+function createPopover() {
     const popover = document.createElement('div');
     popover.classList.add('popover');
+    return popover;
+}
 
-    // Cria o botão de fechamento
+function createCloseButton(popover) {
     const closeButton = document.createElement('span');
     closeButton.classList.add('popover-close-button');
     closeButton.innerHTML = '&times;'; // Símbolo '×'
 
-    // Adiciona o event listener ao botão de fechamento
     closeButton.addEventListener('click', function(event) {
         event.stopPropagation();
         popover.remove();
     });
 
-    // Cria o conteúdo do popover
+    return closeButton;
+}
+
+function createPopoverContent() {
     const popoverContent = document.createElement('div');
     popoverContent.classList.add('popover-content');
+    return popoverContent;
+}
 
-    // Cria o formulário de avaliação
+function createFeedbackForm() {
     const form = document.createElement('form');
     form.classList.add('feedback-form');
 
-    // Adiciona checkboxes com opções predefinidas
     const options = [
         'Útil',
         'Não Relevante',
@@ -123,7 +144,6 @@ function handlePopover(element) {
         form.appendChild(label);
     });
 
-    // Adiciona um campo de texto para comentários adicionais
     const textareaLabel = document.createElement('label');
     textareaLabel.classList.add('textarea-label');
     textareaLabel.textContent = 'Comentários Adicionais:';
@@ -135,46 +155,38 @@ function handlePopover(element) {
     textareaLabel.appendChild(textarea);
     form.appendChild(textareaLabel);
 
-    // Adiciona um botão de envio
     const submitButton = document.createElement('button');
     submitButton.type = 'submit';
     submitButton.textContent = 'Enviar';
 
     form.appendChild(submitButton);
 
-    // Manipula o envio do formulário
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
+    form.addEventListener('submit', handleFormSubmit);
 
-        // Coleta as opções selecionadas
-        const selectedOptions = [];
-        const checkboxes = form.querySelectorAll('input[name="feedbackOptions"]:checked');
-        checkboxes.forEach(checkbox => {
-            selectedOptions.push(checkbox.value);
-        });
+    return form;
+}
 
-        // Obtém os comentários adicionais
-        const additionalComments = textarea.value.trim();
+function handleFormSubmit(event) {
+    event.preventDefault();
 
-        // Processa os dados conforme necessário (por exemplo, enviar para um servidor)
-        console.log('Opções Selecionadas:', selectedOptions);
-        console.log('Comentários Adicionais:', additionalComments);
+    const form = event.target;
 
-        // Fecha o popover
-        popover.remove();
+    const selectedOptions = [];
+    const checkboxes = form.querySelectorAll('input[name="feedbackOptions"]:checked');
+    checkboxes.forEach(checkbox => {
+        selectedOptions.push(checkbox.value);
     });
 
-    // Adiciona o formulário ao conteúdo do popover
-    popoverContent.appendChild(form);
+    const textarea = form.querySelector('textarea[name="additionalComments"]');
+    const additionalComments = textarea.value.trim();
 
-    // Adiciona o botão de fechamento e o conteúdo ao popover
-    popover.appendChild(closeButton);
-    popover.appendChild(popoverContent);
+    console.log('Opções Selecionadas:', selectedOptions);
+    console.log('Comentários Adicionais:', additionalComments);
 
-    // Anexa o popover ao messagesContainer
-    messagesContainer.appendChild(popover);
+    form.closest('.popover').remove();
+}
 
-    // Calcula a posição do elemento clicado em relação ao contêiner
+function positionPopover(popover, element) {
     const elementRect = element.getBoundingClientRect();
     const containerRect = messagesContainer.getBoundingClientRect();
 
@@ -183,8 +195,9 @@ function handlePopover(element) {
 
     popover.style.top = `${top}px`;
     popover.style.left = `${left}px`;
+}
 
-    // Fecha o popover ao clicar fora dele
+function attachOutsideClickListener(popover, element) {
     document.addEventListener('click', function onDocClick(e) {
         if (!popover.contains(e.target) && e.target !== element) {
             popover.remove();
@@ -194,12 +207,10 @@ function handlePopover(element) {
 }
 
 
-// Função para rolar o chat até a última mensagem
 function scrollToBottom() {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// Função para gerar conteúdo Lorem Ipsum
 function generateLoremIpsum() {
   const listItems = Array.from({ length: 5 }, () => `<li>${faker.lorem.sentence()}</li>`).join('');
 
