@@ -58,9 +58,11 @@ function attachEventListeners(element) {
   textElements.forEach((el) => {
     el.addEventListener('mouseenter', () => {
       el.style.color = '#FF5733';
+      el.style.cursor = "pointer";
     });
     el.addEventListener('mouseleave', () => {
       el.style.color = '';
+      el.style.cursor = "";
     });
     el.addEventListener('click', (event) => {
       event.stopPropagation();
