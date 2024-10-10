@@ -96,7 +96,76 @@ function handlePopover(element) {
     // Cria o conteúdo do popover
     const popoverContent = document.createElement('div');
     popoverContent.classList.add('popover-content');
-    popoverContent.textContent = 'Conteúdo do Popover';
+
+    // Cria o formulário de avaliação
+    const form = document.createElement('form');
+    form.classList.add('feedback-form');
+
+    // Adiciona checkboxes com opções predefinidas
+    const options = [
+        'Útil',
+        'Não Relevante',
+        'Precisa de Correção'
+    ];
+
+    options.forEach(option => {
+        const label = document.createElement('label');
+        label.classList.add('checkbox-label');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'feedbackOptions';
+        checkbox.value = option;
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(option));
+
+        form.appendChild(label);
+    });
+
+    // Adiciona um campo de texto para comentários adicionais
+    const textareaLabel = document.createElement('label');
+    textareaLabel.classList.add('textarea-label');
+    textareaLabel.textContent = 'Comentários Adicionais:';
+
+    const textarea = document.createElement('textarea');
+    textarea.name = 'additionalComments';
+    textarea.rows = 3;
+
+    textareaLabel.appendChild(textarea);
+    form.appendChild(textareaLabel);
+
+    // Adiciona um botão de envio
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.textContent = 'Enviar';
+
+    form.appendChild(submitButton);
+
+    // Manipula o envio do formulário
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Coleta as opções selecionadas
+        const selectedOptions = [];
+        const checkboxes = form.querySelectorAll('input[name="feedbackOptions"]:checked');
+        checkboxes.forEach(checkbox => {
+            selectedOptions.push(checkbox.value);
+        });
+
+        // Obtém os comentários adicionais
+        const additionalComments = textarea.value.trim();
+
+        // Processa os dados conforme necessário (por exemplo, enviar para um servidor)
+        console.log('Opções Selecionadas:', selectedOptions);
+        console.log('Comentários Adicionais:', additionalComments);
+
+        // Fecha o popover
+        popover.remove();
+    });
+
+    // Adiciona o formulário ao conteúdo do popover
+    popoverContent.appendChild(form);
 
     // Adiciona o botão de fechamento e o conteúdo ao popover
     popover.appendChild(closeButton);
@@ -123,6 +192,8 @@ function handlePopover(element) {
         }
     });
 }
+
+
 // Função para rolar o chat até a última mensagem
 function scrollToBottom() {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
